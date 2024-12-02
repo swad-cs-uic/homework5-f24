@@ -54,4 +54,43 @@ describe("Problem3: useCallback", () => {
         // expect(ParentModule.MemoizedTaskItem.type).toHaveBeenCalledTimes(1);
         expect(consoleLogSpy).toHaveBeenCalledTimes(0);
     });
+
+    test("(Additional test case 1) Initial render displays correct number of tasks", async () => {
+        render(<ParentModule.default />);
+        const tasks = screen.getAllByRole("checkbox");
+        expect(tasks.length).toBe(1000);
+    });
+
+    test("(Additional test case 2) Toggling a task updates its completed status", async () => {
+        render(<ParentModule.default />);
+        const checkboxes = screen.getAllByRole("checkbox");
+        fireEvent.click(checkboxes[0]);
+        expect(checkboxes[0]).toBeChecked();
+        fireEvent.click(checkboxes[0]);
+        expect(checkboxes[0]).not.toBeChecked();
+    });
+
+    test("(Additional test case 3) Adding a task increases the task count", async () => {
+        render(<ParentModule.default />);
+        const input = screen.getByRole("textbox");
+        const button = screen.getByRole("button", { name: /Add Task/i });
+
+        fireEvent.change(input, { target: { value: "New Task" } });
+        fireEvent.click(button);
+
+        const tasks = screen.getAllByRole("checkbox");
+        expect(tasks.length).toBe(1001);
+    });
+
+    test("(Additional test case 4) Deleting a task decreases the task count", async () => {
+        render(<ParentModule.default />);
+        const deleteButtons = screen.getAllByRole("button", {
+            name: /Delete/i,
+        });
+        fireEvent.click(deleteButtons[0]);
+
+        const tasks = screen.getAllByRole("checkbox");
+        expect(tasks.length).toBe(999);
+    });
+    
 });

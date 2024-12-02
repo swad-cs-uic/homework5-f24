@@ -145,4 +145,45 @@ describe("Problem1: Fibonacci Calculator with Web Worker", () => {
             expect(onRender).toHaveBeenCalledTimes(5);
         });
     });
+
+
+    test("(Additional test case 1) updates result correctly on multiple computations", async () => {
+        render(<App />);
+
+        const numberInput = screen.getByLabelText(
+            /Enter a number/i,
+        ) as HTMLInputElement;
+        const calculateButton = screen.getByRole("button", {
+            name: /Calculate/i,
+        });
+
+        // First computation
+        fireEvent.change(numberInput, { target: { value: "10" } });
+        fireEvent.click(calculateButton);
+
+        const mockResult1 = { value: 55, duration: 5 };
+        await act(async () => {
+            MockWorker.instances[0].simulateMessage(mockResult1);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText(`Result: ${mockResult1.value}`)).toBeVisible();
+            expect(screen.getByText(/Time taken: \d+\.\d+ms/)).toBeVisible();
+        });
+
+        // Second computation
+        fireEvent.change(numberInput, { target: { value: "15" } });
+        fireEvent.click(calculateButton);
+
+        const mockResult2 = { value: 610, duration: 8 };
+        await act(async () => {
+            MockWorker.instances[0].simulateMessage(mockResult2);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText(`Result: ${mockResult2.value}`)).toBeVisible();
+            expect(screen.getByText(/Time taken: \d+\.\d+ms/)).toBeVisible();
+        });
+    });
+
 });
