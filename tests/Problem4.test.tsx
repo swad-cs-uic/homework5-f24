@@ -39,4 +39,21 @@ describe("Problem4: List Virtualization with react-window", () => {
     //     // Get the List container by data-testid
     //     const listContainer = screen.getByTestId("product-list");
     // });
+    
+    test("(Additional test cases 1) renders the correct product details", async () => {
+        const initialCount = 100;
+        render(<Problem4 initialCount={initialCount} />);
+
+        const product = screen.getByTestId("product-row-0");
+        expect(product).toHaveTextContent(/Product 0/);
+        expect(product).toHaveTextContent(/\$[0-9]+\.[0-9]{2}/);
+    });
+
+    test("(Additional test case 2) does not render items outside the viewport", async () => {
+        const initialCount = 100;
+        render(<Problem4 initialCount={initialCount} />);
+
+        expect(screen.queryByTestId("product-row-50")).not.toBeInTheDocument();
+    });
 });
+
